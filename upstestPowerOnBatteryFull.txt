@@ -1,0 +1,44 @@
+APC      : 001,043,1045
+DATE     : 2014-10-22 10:23:39 -0700  
+HOSTNAME : VMLDev
+VERSION  : 3.14.10 (13 September 2011) debian
+UPSNAME  : myownups
+CABLE    : USB Cable
+DRIVER   : USB UPS Driver
+UPSMODE  : Stand Alone
+STARTTIME: 2014-10-21 20:27:03 -0700  
+MODEL    : Smart-UPS 750 
+STATUS   : ONLINE 
+LINEV    : 121.6 Volts
+LOADPCT  :  26.6 Percent Load Capacity
+BCHARGE  : 100.0 Percent
+TIMELEFT :  39.0 Minutes
+MBATTCHG : 5 Percent
+MINTIMEL : 3 Minutes
+MAXTIME  : 0 Seconds
+OUTPUTV  : 121.6 Volts
+SENSE    : High
+DWAKE    : -01 Seconds
+DSHUTD   : 180 Seconds
+LOTRANS  : 106.0 Volts
+HITRANS  : 127.0 Volts
+RETPCT   : 015.0 Percent
+ITEMP    : 33.3 C Internal
+ALARMDEL : 30 seconds
+BATTV    : 27.4 Volts
+LINEFREQ : 60.0 Hz
+LASTXFER : Low line voltage
+NUMXFERS : 0
+TONBATT  : 0 seconds
+CUMONBATT: 0 seconds
+XOFFBATT : N/A
+SELFTEST : NO
+STESTI   : 14 days
+STATFLAG : 0x07000008 Status Flag
+MANDATE  : 2007-09-11
+SERIALNO : AS0737240300
+BATTDATE : 2007-09-11
+NOMOUTV  : 120 Volts
+NOMBATTV :  24.0 Volts
+FIRMWARE : 651.13.D USB FW:7.3
+END APC  : 2014-10-22 10:35:49 -0700  
