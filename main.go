@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+
+	"github.com/linde12/gowol"
 )
 
 var testMode bool
@@ -18,15 +20,16 @@ var upPercent, downPercent float64
 
 func main() {
 
-	var apcResult, serverIP, serverPort string
+	var apcResult, serverIP, serverPort, macAddress string
 	var curVolts, curBattery float64
 	var serverState, desiredServerState bool
 
-	flag.BoolVar(&testMode, "t", false, "enable test mode")
-	flag.Float64Var(&upPercent, "up", 50.0, "charge level of battery to reach before turning server on")
-	flag.Float64Var(&downPercent, "down", 35.0, "charge level of battery to reach before shutdown of server")
-	flag.StringVar(&serverIP, "ip", "192.168.1.2", "ip address of the server monoriting.")
-	flag.StringVar(&serverPort, "port", "80", "port of the server monoriting.")
+	flag.BoolVar(&testMode, "t", false, "enable test mode: -t")
+	flag.Float64Var(&upPercent, "up", 50.0, "charge level of battery to reach before turning server on: -up=\"50.0\"")
+	flag.Float64Var(&downPercent, "down", 35.0, "charge level of battery to reach before shutdown of server: -down=\"35.0\"")
+	flag.StringVar(&serverIP, "ip", "192.168.1.2", "ip address of the server monoriting: -ip=\"192.168.1.2\"")
+	flag.StringVar(&serverPort, "port", "80", "port of the server monoriting: -port=\"80\"")
+	flag.StringVar(&macAddress, "mac", "AA:AA:AA:AA:AA:AA", "MAC address of the server to send a WOL magic packet:  -mac=\"AA:AA:AA:AA:AA:AA\"")
 
 	flag.Parse()
 
@@ -45,6 +48,16 @@ func main() {
 	if desiredServerState != serverState {
 		// need to call code to shut down or turn on the server... unless this is in test mode
 		fmt.Println("Server's power needs to be changed to", desiredServerState)
+		if desiredServerState == true {
+			// send magic packet to turn it on
+			if packet, err := gowol.NewMagicPacket(macAddress); err == nil {
+				packet.Send("255.255.255.255")          // send to broadcast
+				packet.SendPort("255.255.255.255", "7") // specify receiving port
+			}
+		} else {
+			// ssh to server and send WOL
+			// TODO: switch this to an api call to the server.
+		}
 	}
 }
 
