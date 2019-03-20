@@ -40,11 +40,18 @@ func main() {
 
 	curVolts, curBattery = getBatteryStats(apcResult)
 	serverState = isServerRunning(serverIP, serverPort)
+	fmt.Printf(GetStatusStr(curVolts, curBattery, serverState))
 	desiredServerState = GetDesiredPowerState(serverState, curBattery, curVolts)
 	if desiredServerState != serverState {
 		// need to call code to shut down or turn on the server... unless this is in test mode
 		fmt.Println("Server's power needs to be changed to", desiredServerState)
 	}
+}
+
+// GetStatusStr returns a string of the various statuses. Can be used for logging and debuggingf
+func GetStatusStr(curVolts, curBattery float64, serverOn bool) string {
+	s := fmt.Sprintf("Server on: %v | Current Volts: %3.1f | Current Battery: %3.1f | Shutdown at: %3.1f | Startup at: %3.1f", serverOn, curVolts, curBattery, downPercent, upPercent)
+	return s
 }
 
 // getBatteryStats parses a string in the APC "apcaccess" format
@@ -81,7 +88,7 @@ func getBatteryStats(t string) (float64, float64) {
 func RunApcAccess() string {
 	var cmd string
 	if testMode == true {
-		cmd = "../echoBattery/echoBattery.exe"
+		cmd = "../../../echoBattery/echoBattery.exe"
 	} else {
 		cmd = "apcaccess"
 	}
