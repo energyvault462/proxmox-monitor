@@ -15,4 +15,6 @@ TODO:
     - Later goal is to make a REST service that runs on the Proxmox server to receive the shutdown command and do so.
   - send WOL command
   - put in a loop so it continues to run
+  - logging
+  - add Pushover support
   - Create Docker container for deployment
