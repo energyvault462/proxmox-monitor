@@ -20,7 +20,7 @@ var upPercent, downPercent float64
 
 func main() {
 
-	var apcResult, serverIP, serverPort, macAddress string
+	var apcResult, serverIP, serverPort, macAddress, userName string
 	var curVolts, curBattery float64
 	var serverState, desiredServerState bool
 
@@ -29,36 +29,49 @@ func main() {
 	flag.Float64Var(&downPercent, "down", 35.0, "charge level of battery to reach before shutdown of server: -down=\"35.0\"")
 	flag.StringVar(&serverIP, "ip", "192.168.1.2", "ip address of the server monoriting: -ip=\"192.168.1.2\"")
 	flag.StringVar(&serverPort, "port", "80", "port of the server monoriting: -port=\"80\"")
+	flag.StringVar(&userName, "user", "root", "user to ssh into the server for shutdown: -user=\"root\"")
 	flag.StringVar(&macAddress, "mac", "AA:AA:AA:AA:AA:AA", "MAC address of the server to send a WOL magic packet:  -mac=\"AA:AA:AA:AA:AA:AA\"")
 
 	flag.Parse()
 
-	fmt.Printf("ServerIP:     %v\nTestmode:     %v\nBattery up:   %v%%\nBattery down: %v%%\n", serverIP, testMode, upPercent, downPercent)
+	log.Printf("Starting proxmox-monitor\nServerIP:     %v\nTestmode:     %v\nBattery up:   %v%%\nBattery down: %v%%\n", serverIP, testMode, upPercent, downPercent)
 
 	// start of loop
-	apcResult = RunApcAccess()
+	for true {
+		apcResult = RunApcAccess()
 
-	serverState = true // delete this when getServerState() is enabled.
-	//serverState = getServerState
+		serverState = true // delete this when getServerState() is enabled.
+		//serverState = getServerState
 
-	curVolts, curBattery = getBatteryStats(apcResult)
-	serverState = isServerRunning(serverIP, serverPort)
-	fmt.Printf(GetStatusStr(curVolts, curBattery, serverState))
-	desiredServerState = GetDesiredPowerState(serverState, curBattery, curVolts)
-	if desiredServerState != serverState {
-		// need to call code to shut down or turn on the server... unless this is in test mode
-		fmt.Println("Server's power needs to be changed to", desiredServerState)
-		if desiredServerState == true {
-			// send magic packet to turn it on
-			if packet, err := gowol.NewMagicPacket(macAddress); err == nil {
-				packet.Send("255.255.255.255")          // send to broadcast
-				packet.SendPort("255.255.255.255", "7") // specify receiving port
+		curVolts, curBattery = getBatteryStats(apcResult)
+		serverState = isServerRunning(serverIP, serverPort)
+		log.Printf(GetStatusStr(curVolts, curBattery, serverState))
+		desiredServerState = GetDesiredPowerState(serverState, curBattery, curVolts)
+		if desiredServerState != serverState {
+			// need to call code to shut down or turn on the server... unless this is in test mode
+			log.Println("Server's power needs to be changed to", desiredServerState)
+			if desiredServerState == true {
+				// send magic packet to turn it on
+				log.Println("Power is on, battery above accpetable limit. Sending WOL to server...")
+				if packet, err := gowol.NewMagicPacket(macAddress); err == nil {
+					packet.Send("255.255.255.255")          // send to broadcast
+					packet.SendPort("255.255.255.255", "7") // specify receiving port
+				}
+				time.Sleep(5 * time.Minute)
+			} else {
+				// ssh to server and send WOL
+				// TODO: switch this to an api call to the server.
+				log.Println("Power is off, battery dropped below accpetable limit. Sending shutdown to server...")
+				ShutdownViaSSH(userName, serverIP)
+				time.Sleep(5 * time.Minute)
 			}
 		} else {
-			// ssh to server and send WOL
-			// TODO: switch this to an api call to the server.
+			time.Sleep(1 * time.Minute)
 		}
+
 	}
+
+	log.Println("Finishing proxmox-monitor")
 }
 
 // GetStatusStr returns a string of the various statuses. Can be used for logging and debuggingf
@@ -97,6 +110,15 @@ func getBatteryStats(t string) (float64, float64) {
 	return volts, charge
 }
 
+// ShutdownViaSSH uses ssh name@ip to issue a shutdown command.
+func ShutdownViaSSH(name, ip string) {
+	cmd := fmt.Sprintf("ssh %v@5v \"sudo /sbin/shutdown now\"", name, ip)
+	_, err := exec.Command(cmd).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 // RunApcAccess calls the apcaccess utility and returns its response.
 func RunApcAccess() string {
 	var cmd string
@@ -129,10 +151,10 @@ func isServerRunning(site, port string) bool {
 	timeout := time.Duration(1 * time.Second)
 	_, err := net.DialTimeout("tcp", site+":"+port, timeout)
 	if err != nil {
-		fmt.Println("Site unreachable")
+		//log.Println("Site unreachable")
 		return false
 	}
-	fmt.Println("site is working")
+	//log.Println("site is working")
 	return true
 
 }
