@@ -112,7 +112,8 @@ func getBatteryStats(t string) (float64, float64) {
 
 // ShutdownViaSSH uses ssh name@ip to issue a shutdown command.
 func ShutdownViaSSH(name, ip string) {
-	cmd := fmt.Sprintf("ssh %v@5v \"sudo /sbin/shutdown now\"", name, ip)
+	cmd := fmt.Sprintf("ssh %v@%v \"sudo /sbin/shutdown now\"", name, ip)
+	log.Println("   Running: ", cmd)
 	_, err := exec.Command(cmd).Output()
 	if err != nil {
 		log.Fatal(err)
