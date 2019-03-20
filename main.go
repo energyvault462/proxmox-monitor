@@ -37,6 +37,7 @@ func main() {
 	log.Printf("Starting proxmox-monitor\nServerIP:     %v\nTestmode:     %v\nBattery up:   %v%%\nBattery down: %v%%\n", serverIP, testMode, upPercent, downPercent)
 
 	// start of loop
+	ShutdownViaSSH(userName, serverIP)
 	for true {
 		apcResult = RunApcAccess()
 
@@ -112,7 +113,8 @@ func getBatteryStats(t string) (float64, float64) {
 
 // ShutdownViaSSH uses ssh name@ip to issue a shutdown command.
 func ShutdownViaSSH(name, ip string) {
-	cmd := fmt.Sprintf("ssh %v@%v \"sudo /sbin/shutdown now\"", name, ip)
+	//cmd := fmt.Sprintf("ssh %v@%v \"sudo /sbin/shutdown now\"", name, ip)
+	cmd := fmt.Sprintf("ssh %v@%v 'sudo ls -l'", name, ip)
 	log.Println("   Running: ", cmd)
 	_, err := exec.Command(cmd).Output()
 	if err != nil {
