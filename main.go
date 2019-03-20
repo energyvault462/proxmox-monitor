@@ -37,7 +37,6 @@ func main() {
 	log.Printf("Starting proxmox-monitor\nServerIP:     %v\nTestmode:     %v\nBattery up:   %v%%\nBattery down: %v%%\n", serverIP, testMode, upPercent, downPercent)
 
 	// start of loop
-	ShutdownViaSSH(userName, serverIP)
 	for true {
 		apcResult = RunApcAccess()
 
