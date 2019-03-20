@@ -30,7 +30,7 @@ func main() {
 
 	flag.Parse()
 
-	fmt.Printf("Testmode:     %v\nBattery up:   %v%%\nBattery down: %v%%\n", testMode, upPercent, downPercent)
+	fmt.Printf("ServerIP:     %v\nTestmode:     %v\nBattery up:   %v%%\nBattery down: %v%%\n", serverIP, testMode, upPercent, downPercent)
 
 	// start of loop
 	apcResult = RunApcAccess()
@@ -39,8 +39,8 @@ func main() {
 	//serverState = getServerState
 
 	curVolts, curBattery = getBatteryStats(apcResult)
-	desiredServerState = GetDesiredPowerState(serverState, curBattery, curVolts)
 	serverState = isServerRunning(serverIP, serverPort)
+	desiredServerState = GetDesiredPowerState(serverState, curBattery, curVolts)
 	if desiredServerState != serverState {
 		// need to call code to shut down or turn on the server... unless this is in test mode
 		fmt.Println("Server's power needs to be changed to", desiredServerState)
