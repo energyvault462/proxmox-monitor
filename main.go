@@ -34,7 +34,7 @@ func main() {
 
 	flag.Parse()
 
-	file, err := os.OpenFile("/log/pmm.log", os.O_CREATE|os.O_APPEND, 0644)
+	file, err := os.OpenFile("/logs/pmm.log", os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
