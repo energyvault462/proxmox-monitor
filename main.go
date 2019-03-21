@@ -34,15 +34,14 @@ func main() {
 
 	flag.Parse()
 
-	file, err := os.OpenFile("/logs/pmm.log", os.O_CREATE|os.O_APPEND, 0644)
+ 	file, err := os.OpenFile("/logs/pmm.log",  os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
 	log.SetOutput(file)
-
-	log.Printf("Starting proxmox-monitor\nServerIP:     %v\nTestmode:     %v\nBattery up:   %v%%\nBattery down: %v%%\n", serverIP, testMode, upPercent, downPercent)
+	log.Printf("Starting proxmox-monitor\n\tServerIP:     %v\n\tTestmode:     %v\n\tBattery up:   %v%%\n\tBattery down: %v%%\n", serverIP, testMode, upPercent, downPercent)
 
 	// start of loop
 	for true {
