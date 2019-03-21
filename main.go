@@ -34,6 +34,14 @@ func main() {
 
 	flag.Parse()
 
+	file, err := os.OpenFile("/log/pmm.log", os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	log.SetOutput(file)
+
 	log.Printf("Starting proxmox-monitor\nServerIP:     %v\nTestmode:     %v\nBattery up:   %v%%\nBattery down: %v%%\n", serverIP, testMode, upPercent, downPercent)
 
 	// start of loop
@@ -72,6 +80,11 @@ func main() {
 	}
 
 	log.Println("Finishing proxmox-monitor")
+}
+
+// LogAndNotify sends messages to logs as well as pushover.
+func LogAndNotify(file *os.File) {
+
 }
 
 // GetStatusStr returns a string of the various statuses. Can be used for logging and debuggingf
