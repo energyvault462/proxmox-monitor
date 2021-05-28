@@ -6,8 +6,8 @@ This is a personal project with a side benefit to get more practice with GoLang.
 To run:
   go build
   ./proxmox-monitor -ip="192.168.1.2" -down=35.0 -up=20.0
-  
-  
+
+
 ./proxmox-monitor -h    will show information on the available flags.
 
 TODO:
@@ -18,3 +18,6 @@ TODO:
   - logging
   - add Pushover support
   - Create Docker container for deployment
+
+
+need to force update
