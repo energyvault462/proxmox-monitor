@@ -18,6 +18,3 @@ TODO:
   - logging
   - add Pushover support
   - Create Docker container for deployment
-
-
-need to force update
